@@ -191,7 +191,7 @@ points_group = folium.FeatureGroup(name='Municipios (puntos)', show=True).add_to
 receiver = points_group
 if use_cluster:
     # Clúster con icono personalizado que SUMA las puntuaciones leyendo el HTML del icono de cada marker
-    icon_fn = """
+    icon_fn = r"""
     function(cluster){
       var markers = cluster.getAllChildMarkers();
       var sum = 0.0;
