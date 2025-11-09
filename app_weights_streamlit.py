@@ -227,14 +227,21 @@ for _, r in merged.iterrows():
     ).add_to(receiver)
 
 # --- Puntos estáticos objetivo (bancos a abrir) ---
-TARGET_NOMBRES = ['Villanueva de la Serena', 'Torredonjimeno', 'Viator']
+TARGET_NOMBRES = ['Villanueva de la Serena', 'Vimianzo', 'Viator']
 targets = merged[merged['NOMBRE'].isin(TARGET_NOMBRES)].copy()
 if not targets.empty:
+    # Agrupar por municipio y tomar el centroide promedio (solo 1 punto por municipio)
+    targets_grouped = targets.groupby('NOMBRE', as_index=False).agg({
+        'PROVINCIA': 'first',
+        'lat': 'mean',
+        'lon': 'mean',
+        'score_dynamic': 'mean'
+    })
     objetivos_group = folium.FeatureGroup(name='🏦 Objetivos (3 bancos)', show=True).add_to(m)
-    for _, tr in targets.iterrows():
-        # Icono distintivo: fondo morado y emoji banco
+    for _, tr in targets_grouped.iterrows():
+        # Icono distintivo: fondo morado y emoji banco (más pequeño)
         icon_html = f"""
-        <div style='background:#6a00ff;color:#fff;font-size:14px;font-weight:700;padding:8px 10px;text-align:center;border-radius:25px;border:3px solid #000;box-shadow:0 0 10px rgba(106,0,255,0.6);'>
+        <div style='background:#6a00ff;color:#fff;font-size:11px;font-weight:700;padding:4px 6px;text-align:center;border-radius:12px;border:2px solid #000;box-shadow:0 0 8px rgba(106,0,255,0.5);'>
         🏦
         </div>
         """
