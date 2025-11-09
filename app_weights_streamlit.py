@@ -11,20 +11,17 @@ from streamlit_folium import st_folium
 
 BASE_DIR = os.path.dirname(__file__)
 # Detecta automáticamente el CSV disponible para facilitar la demo
-CANDIDATE_CSVS = [
-    os.path.join(BASE_DIR, 'municipios_priorizados_2026.csv'),
-    os.path.join(BASE_DIR, 'municipios_priorizados.csv'),
-    os.path.join(BASE_DIR, 'municipios_priorizados_con_distancia.csv'),
-]
-CSV = next((p for p in CANDIDATE_CSVS if os.path.exists(p)), CANDIDATE_CSVS[0])
+import glob
+csv_files = glob.glob(os.path.join(BASE_DIR, '*.csv'))
+CSV = csv_files[0] if csv_files else os.path.join(BASE_DIR, 'municipios_priorizados_2026.csv')
 SHAPE_FILE = os.path.join(os.path.dirname(BASE_DIR), 'cartografia_censo2011_nacional', 'SECC_CPV_E_20111101_01_R_INE.shp')
 
 st.set_page_config(page_title='Mapa interactivo – pesos de propensión', layout='wide')
 st.title('Propensión 2026 – Ajuste dinámico de pesos')
 st.caption('Mueve los deslizadores para recalcular y recolorear el mapa en tiempo real.')
-st.caption(f"Fuente de datos: {os.path.basename(CSV)}")
+st.caption(f"📊 Fuente de datos: {os.path.basename(CSV)}")
 
-@st.cache_data(show_spinner=False)
+@st.cache_data(show_spinner=False, ttl=300)
 def load_csv(path: str) -> pd.DataFrame:
     if not os.path.exists(path):
         st.error(f'No se encontró el CSV: {path}')
